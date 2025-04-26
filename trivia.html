@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Estudiantil</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .options button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      width: 80%;
+      border: none;
+      border-radius: 5px;
+      background: #e0e0e0;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .options button.correct {
+      background-color: #4CAF50;
+      color: white;
+    }
+    .options button.incorrect {
+      background-color: #f44336;
+      color: white;
+    }
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0.5;
+    }
+    #nextBtn.enabled {
+      opacity: 1;
+    }
+    #result {
+      font-size: 1.5em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container animate__animated animate__fadeIn">
+  <div id="quiz">
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <button id="nextBtn" disabled>Siguiente</button>
+  </div>
+  <div id="result" class="animate__animated animate__fadeIn" style="display:none;"></div>
+</div>
+
+<script>
+const questions = [
+  { q: "¿Cuál es el planeta más cercano al Sol?", options: ["Venus", "Mercurio", "Tierra", "Marte"], answer: 1 },
+  { q: "¿Quién escribió 'Cien años de soledad'?", options: ["Pablo Neruda", "Octavio Paz", "Gabriel García Márquez", "Mario Vargas Llosa"], answer: 2 },
+  { q: "¿Cuál es el río más largo del mundo?", options: ["Amazonas", "Nilo", "Yangtsé", "Misisipi"], answer: 0 },
+  { q: "¿En qué continente se encuentra Egipto?", options: ["Asia", "África", "Europa", "Oceanía"], answer: 1 },
+  { q: "¿Cuántos planetas tiene el sistema solar?", options: ["7", "8", "9", "10"], answer: 1 },
+  { q: "¿Qué instrumento mide la temperatura?", options: ["Barómetro", "Higrómetro", "Termómetro", "Anemómetro"], answer: 2 },
+  { q: "¿Quién pintó la Mona Lisa?", options: ["Leonardo da Vinci", "Miguel Ángel", "Vincent van Gogh", "Pablo Picasso"], answer: 0 },
+  { q: "¿Cuál es el país más grande del mundo?", options: ["Canadá", "China", "Estados Unidos", "Rusia"], answer: 3 },
+  { q: "¿Qué gas respiran las plantas durante la fotosíntesis?", options: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Hidrógeno"], answer: 2 },
+  { q: "¿En qué año llegó Cristóbal Colón a América?", options: ["1492", "1500", "1485", "1510"], answer: 0 },
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const nextBtn = document.getElementById('nextBtn');
+const resultEl = document.getElementById('result');
+
+function loadQuestion() {
+  questionEl.textContent = questions[currentQuestion].q;
+  optionsEl.innerHTML = '';
+  questions[currentQuestion].options.forEach((option, index) => {
+    const button = document.createElement('button');
+    button.textContent = option;
+    button.addEventListener('click', () => selectAnswer(index, button));
+    optionsEl.appendChild(button);
+  });
+  nextBtn.disabled = true;
+  nextBtn.classList.remove('enabled');
+}
+
+function selectAnswer(index, button) {
+  const buttons = optionsEl.querySelectorAll('button');
+  buttons.forEach(btn => btn.disabled = true);
+
+  if (index === questions[currentQuestion].answer) {
+    button.classList.add('correct');
+    score++;
+  } else {
+    button.classList.add('incorrect');
+    buttons[questions[currentQuestion].answer].classList.add('correct');
+  }
+
+  nextBtn.disabled = false;
+  nextBtn.classList.add('enabled');
+}
+
+nextBtn.addEventListener('click', () => {
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult() {
+  document.getElementById('quiz').style.display = 'none';
+  let feedback;
+  if (score >= 9) feedback = '¡Excelente trabajo!';
+  else if (score >= 7) feedback = '¡Muy bien hecho!';
+  else if (score >= 5) feedback = '¡Buen intento, sigue practicando!';
+  else feedback = '¡No te desanimes, sigue aprendiendo!';
+  resultEl.innerHTML = `Tu puntuación es ${score}/${questions.length}.<br>${feedback}`;
+  resultEl.style.display = 'block';
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
